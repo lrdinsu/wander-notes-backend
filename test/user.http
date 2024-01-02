@@ -1,0 +1,5 @@
+### Get all users
+GET {{api}}/users
+
+### Get user
+GET {{api}}/users/2

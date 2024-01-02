@@ -1,17 +1,22 @@
-import express from 'express';
+import express, { Express } from 'express';
 
-import { createTour, getAllTours, getTour } from '@/controllers/toursControllers.js';
+import { tourRouter } from '@/routes/tourRoutes.js';
+import { userRouter } from '@/routes/userRoutes.js';
+import { dataPath } from '@/utils/path.js';
 
-const app = express();
+export const app: Express = express();
 
+// Middlewares
+// build in middleware function
 app.use(express.json());
+app.use(express.static(`${dataPath}/../img`));
 
-app.get('/api/v1/tours', getAllTours);
-app.post('/api/v1/tours', createTour);
-app.get('/api/v1/tours/:id', getTour);
-
-const PORT = process.env.PORT ?? 3000;
-
-app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}...`);
+//my own middleware function, ALWAYS use next()
+app.use((_, __, next) => {
+  console.log('Hello from the middleware🍓');
+  next();
 });
+
+// Routes
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);

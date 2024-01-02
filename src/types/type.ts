@@ -13,3 +13,13 @@ export type Tour = {
   images: string[];
   startDates: string[];
 };
+
+export type User = {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  active: boolean;
+  photo: string;
+  password: string;
+};

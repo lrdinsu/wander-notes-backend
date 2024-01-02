@@ -28,8 +28,36 @@ Content-Type: application/json
   ]
 }
 
+### Post new tour WRONG
+POST {{api}}/tours
+Content-Type: application/json
+
+{
+  "difficulty": "easy"
+}
+
+### Post new tour with name and price
+POST {{api}}/tours
+Content-Type: application/json
+
+{
+  "name": "alex",
+  "price": 2
+}
+
 ### Get Tour by id
 GET {{api}}/tours/2
 
 ### Get Tour by WRONG id
 GET {{api}}/tours/89
+
+### Update Tour by id
+PATCH {{api}}/tours/1
+Content-Type: application/json
+
+{
+  "difficulty": "hard"
+}
+
+### Delete Tour
+DELETE {{api}}/tours/1
