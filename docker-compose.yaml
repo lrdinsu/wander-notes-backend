@@ -1,7 +1,15 @@
 version: '3.9'
 
 services:
-  app:
-    build: .
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
     ports:
-      - 8000:8000
+      - 5432:5432
+
+    environment:
+      - POSTGRES_DB=wanderNotes
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

@@ -3,6 +3,7 @@ node_modules
 .gitignore
 Dockerfile
 .dockerignore
+data
 
 # Logs
 *.log
