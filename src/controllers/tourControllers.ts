@@ -1,47 +1,9 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
 
 import { db } from '@/db/index.js';
 import { tour } from '@/db/schema.js';
 import { insertTourSchema } from '@/types/schema.js';
-
-
-// const tours = JSON.parse(
-//   readFileSync(`${dataPath}/tours-simple.json`, 'utf-8'),
-// ) as Tour[];
-
-// export function checkID(
-//   _: Request,
-//   res: Response,
-//   next: NextFunction,
-//   val: string,
-// ) {
-//   const index = tours.findIndex((tour) => tour.id === Number(val));
-//
-//   if (index === -1) {
-//     res.status(404).json({
-//       status: 'fail',
-//       message: 'Invalid ID',
-//     });
-//     return;
-//   }
-//   next();
-// }
-
-// export function checkBody(req: Request, res: Response, next: NextFunction) {
-//   const isBodyValid =
-//     Object.prototype.hasOwnProperty.call(req.body, 'name') ||
-//     Object.prototype.hasOwnProperty.call(req.body, 'price');
-//
-//   if (!isBodyValid) {
-//     res.status(400).json({
-//       status: 'fail',
-//       message: 'Invalid new tour!',
-//     });
-//     return;
-//   }
-//   next();
-// }
 
 export function checkID(req: Request, res: Response, next: NextFunction) {
   const id = Number(req.params.id);
@@ -57,9 +19,20 @@ export function checkID(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export async function getAllTours(_: Request, res: Response) {
+export async function getAllTours(req: Request, res: Response) {
   try {
-    const tours = await db.select().from(tour);
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    console.log(req.query, queryObj);
+
+    const tours = await db
+      .select()
+      .from(tour)
+      .where(and(eq(tour.duration, 5), eq(tour.difficulty, 'easy')));
+
     // const tours = await db.query.tour.findMany();
 
     res.status(200).json({
@@ -85,12 +58,6 @@ export async function getAllTours(_: Request, res: Response) {
 }
 
 export async function createTour(req: Request, res: Response) {
-  // const newId = tours.length === 0 ? 1 : tours[tours.length - 1].id + 1;
-  // const newTour = { ...req.body, id: newId } as Tour;
-  //
-  // tours.push(newTour);
-  // await writeFile(`${dataPath}/tours-simple.json`, JSON.stringify(tours));
-
   try {
     const newTour = insertTourSchema.parse(req.body);
     // @ts-expect-error: FIXME - drizzle-orm array types are not working properly
@@ -147,13 +114,6 @@ export async function getTour(req: Request, res: Response) {
 }
 
 export async function updateTour(req: Request, res: Response) {
-  // const id = Number(req.params.id);
-  // const changedIndex = tours.findIndex((tour) => tour.id === id);
-  //
-  // const changedTour = { ...tours[changedIndex], ...req.body } as Tour;
-  // tours[changedIndex] = changedTour;
-  // await writeFile(`${dataPath}/tours-simple.json`, JSON.stringify(tours));
-
   try {
     const id = Number(req.params.id);
 

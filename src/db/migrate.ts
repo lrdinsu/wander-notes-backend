@@ -9,6 +9,7 @@ const migrationConnection = postgres(connectionString, { max: 1 });
 async function main() {
   await migrate(drizzle(migrationConnection), { migrationsFolder: 'drizzle' });
   await migrationConnection.end();
+  process.exit(0);
 }
 
 main().catch((err) => {
