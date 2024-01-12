@@ -1,6 +1,3 @@
-### Get all tours
-GET {{api}}/tours
-
 ### Create a tour
 POST {{api}}/tours
 Content-Type: application/json
@@ -28,9 +25,6 @@ Content-Type: application/json
     "2021-10-05,10:00"
   ]
 }
-
-### Get tour by id
-GET {{api}}/tours/1
 
 ### Update tour by id
 PATCH {{api}}/tours/5

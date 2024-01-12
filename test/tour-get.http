@@ -1,0 +1,8 @@
+### Get all tours
+GET {{api}}/tours
+
+### Get tour by id
+GET {{api}}/tours/1
+
+### Get tour using query params
+GET {{api}}/tours?duration=5&difficulty=EASY

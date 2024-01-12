@@ -10,3 +10,5 @@ dev-data
 .eslintrc.cjs
 *.d.ts
 *.js
+
+prisma

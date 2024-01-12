@@ -1,7 +1,16 @@
 {
-  "extends": "@tsconfig/node-lts/tsconfig.json",
   "compilerOptions": {
+    "lib": ["esnext"],
+    "module": "NodeNext",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "sourceMap": true,
     /* Linting */
+    "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -13,9 +22,7 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "declaration": true,
-
     /* Path */
-    "outDir": "dist",
     "baseUrl": "src/",
     "paths": {
       "@/db/*": ["db/*"],
@@ -25,7 +32,6 @@
       "@/routes/*": ["routes/*"]
     }
   },
-
   "include": ["src"],
   "exclude": ["dist", "node_modules"]
 }

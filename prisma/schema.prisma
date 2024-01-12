@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider                  = "zod-prisma-types"
+  createRelationValuesTypes = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tour {
+  id              Int        @id @default(autoincrement())
+  name            String     @unique
+  duration        Int
+  maxGroupSize    Int
+  difficulty      Difficulty
+  ratingsAverage  Float      @default(4.5)
+  ratingsQuantity Int        @default(0)
+  price           Int
+  priceDiscount   Int?
+  summary         String
+  description     String?
+  imageCover      String
+  images          String[]
+  createdAt       DateTime   @default(now())
+  startDates      DateTime[]
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  DIFFICULT
+}
