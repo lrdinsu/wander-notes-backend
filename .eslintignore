@@ -10,3 +10,6 @@ dev-data
 .eslintrc.cjs
 *.d.ts
 *.js
+
+prisma
+queryParser.ts

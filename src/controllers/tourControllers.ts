@@ -1,105 +1,165 @@
 import { NextFunction, Request, Response } from 'express';
-import { readFileSync } from 'fs';
-import { writeFile } from 'fs/promises';
 
-import { Tour } from '@/types/type.js';
+import { prisma } from '@/db/index.js';
+import { TourQueryParamsSchema } from '@/types/schemas.js';
+import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
 
-import { dataPath } from '../utils/path.js';
+import {
+  TourCreateInputSchema,
+  TourUpdateInputSchema,
+} from '../../prisma/generated/zod/index.js';
 
+export function checkID(req: Request, res: Response, next: NextFunction) {
+  const id = Number(req.params.id);
 
-const tours = JSON.parse(
-  readFileSync(`${dataPath}/tours-simple.json`, 'utf-8'),
-) as Tour[];
-
-export function checkID(
-  _: Request,
-  res: Response,
-  next: NextFunction,
-  val: string,
-) {
-  const index = tours.findIndex((tour) => tour.id === Number(val));
-
-  if (index === -1) {
-    res.status(404).json({
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(400).json({
       status: 'fail',
       message: 'Invalid ID',
     });
     return;
   }
+
   next();
 }
 
-export function checkBody(req: Request, res: Response, next: NextFunction) {
-  const isBodyValid =
-    Object.prototype.hasOwnProperty.call(req.body, 'name') ||
-    Object.prototype.hasOwnProperty.call(req.body, 'price');
+export async function getAllTours(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    console.log(req.query);
+    const { page, limit, sort, fields, ...queryParams } =
+      TourQueryParamsSchema.parse(req.query);
 
-  if (!isBodyValid) {
-    res.status(400).json({
-      status: 'fail',
-      message: 'Invalid new tour!',
+    const queryOptions = buildPrismaReqQueryOptions({
+      page,
+      limit,
+      sort,
+      fields,
     });
-    return;
+
+    const tours = await prisma.tour.findMany({
+      where: {
+        ...queryParams,
+      },
+      ...queryOptions,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (e) {
+    next(e);
   }
-  next();
 }
 
-export function getAllTours(_: Request, res: Response) {
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
+export async function createTour(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const tour = TourCreateInputSchema.parse(req.body);
+    const newTour = await prisma.tour.create({
+      data: tour,
+    });
+
+    res.status(201).json({
+      status: 'success',
+      message: 'New tour created!',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
 }
 
-export async function createTour(req: Request, res: Response) {
-  const newId = tours.length === 0 ? 1 : tours[tours.length - 1].id + 1;
-  const newTour = { ...req.body, id: newId } as Tour;
+export async function getTour(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const currentTour = await prisma.tour.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-  tours.push(newTour);
-  await writeFile(`${dataPath}/tours-simple.json`, JSON.stringify(tours));
+    if (!currentTour) {
+      throw new Error('Invalid ID');
+    }
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        currentTour,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
 }
 
-export function getTour(req: Request, res: Response) {
-  const id = req.params.id;
-  const currentTour = tours.find((tour) => tour.id === Number(id));
+export async function updateTour(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { id } = req.params;
+    const tour = TourUpdateInputSchema.parse(req.body);
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      currentTour,
-    },
-  });
+    const updatedTour = await prisma.tour.update({
+      where: {
+        id: Number(id),
+      },
+      data: tour,
+    });
+
+    if (!updatedTour) {
+      throw new Error('Invalid ID');
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        updatedTour,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
 }
 
-export async function updateTour(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const changedIndex = tours.findIndex((tour) => tour.id === id);
+export async function deleteTour(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { id } = req.params;
 
-  const changedTour = { ...tours[changedIndex], ...req.body } as Tour;
-  tours[changedIndex] = changedTour;
-  await writeFile(`${dataPath}/tours-simple.json`, JSON.stringify(tours));
+    const deletedTour = await prisma.tour.delete({
+      where: {
+        id: Number(id),
+      },
+    });
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      changedTour,
-    },
-  });
-}
+    if (!deletedTour) {
+      throw new Error('Invalid ID');
+    }
 
-export function deleteTour(_: Request, res: Response) {
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (e) {
+    next(e);
+  }
 }

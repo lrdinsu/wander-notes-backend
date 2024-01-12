@@ -1,0 +1,20 @@
+### Get all tours
+GET {{api}}/tours
+
+### Get tour by id
+GET {{api}}/tours/1
+
+### Get tour using query params
+GET {{api}}/tours?duration=5&difficulty=EASY
+
+### Get tour using complex query params
+GET {{api}}/tours?price[lt]=1500&ratingsAverage[gte]=4.5
+
+### Get tour with sorting
+GET {{api}}/tours?sort=-createdAt
+
+### Get tour with pagination
+GET {{api}}/tours?page=2&limit=2
+
+### Get tour with fields
+GET {{api}}/tours?fields=name,price,duration,difficulty

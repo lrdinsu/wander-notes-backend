@@ -4,7 +4,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended-type-checked',
     'plugin:@typescript-eslint/stylistic-type-checked'
   ],
-  plugins: ['@typescript-eslint', 'drizzle'],
+  plugins: ['@typescript-eslint'],
   env: {
     es2023: true,
     node: true
