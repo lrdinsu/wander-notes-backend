@@ -12,3 +12,4 @@ dev-data
 *.js
 
 prisma
+queryParser.ts

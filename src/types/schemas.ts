@@ -1,20 +1,36 @@
 import { z } from 'zod';
 
+import { TourSchema } from '../../prisma/generated/zod/index.js';
+
 const QueryParamsBaseSchema = z.object({
   page: z.coerce.number().optional(),
   limit: z.coerce.number().optional(),
-  sort: z.enum(['price', 'ratingsAverage']).optional(),
+  sort: z.string().optional(),
   fields: z.string().optional(),
 });
 
-export const TourQueryParamsSchema = QueryParamsBaseSchema.merge(
-  z.object({
-    name: z.string().optional(),
-    duration: z.coerce.number().optional(),
-    maxGroupSize: z.coerce.number().optional(),
-    difficulty: z.enum(['EASY', 'MEDIUM', 'DIFFICULT']).optional(),
-    ratingsAverage: z.coerce.number().optional(),
-    ratingsQuantity: z.coerce.number().optional(),
-    price: z.coerce.number().optional(),
-  }),
-);
+function createRangeSchema() {
+  return z
+    .object({
+      gte: z.coerce.number().optional(),
+      lte: z.coerce.number().optional(),
+      gt: z.coerce.number().optional(),
+      lt: z.coerce.number().optional(),
+    })
+    .optional()
+    .or(z.coerce.number().optional());
+}
+
+export const TourQueryParamsSchema = TourSchema.extend({
+  duration: createRangeSchema(),
+  maxGroupSize: createRangeSchema(),
+  price: createRangeSchema(),
+  ratingsAverage: createRangeSchema(),
+  ratingsQuantity: createRangeSchema(),
+})
+  .partial()
+  .merge(QueryParamsBaseSchema)
+  .omit({
+    images: true,
+    startDates: true,
+  });

@@ -7,6 +7,8 @@ import { errorMiddleware } from './middlewares/error.middleware.js';
 
 export const app: Express = express();
 
+// app.set('query parser', queryParser);
+
 // Middlewares
 app.use(express.json());
 

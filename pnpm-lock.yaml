@@ -8,12 +8,18 @@ dependencies:
   '@prisma/client':
     specifier: 5.8.0
     version: 5.8.0(prisma@5.8.0)
+  '@types/qs':
+    specifier: ^6.9.11
+    version: 6.9.11
   express:
     specifier: ^4.18.2
     version: 4.18.2
   postgres:
     specifier: ^3.4.3
     version: 3.4.3
+  qs:
+    specifier: ^6.11.2
+    version: 6.11.2
   zod:
     specifier: 3.21.1
     version: 3.21.1
@@ -621,7 +627,6 @@ packages:
 
   /@types/qs@6.9.11:
     resolution: {integrity: sha512-oGk0gmhnEJK4Yyk+oI7EfXsLayXatCWPHary1MtcmbAifkobT9cM9yutG/hZKIseOU0MqbIwQ/u2nn/Gb+ltuQ==}
-    dev: true
 
   /@types/range-parser@1.2.7:
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
@@ -1793,6 +1798,13 @@ packages:
 
   /qs@6.11.0:
     resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
+    engines: {node: '>=0.6'}
+    dependencies:
+      side-channel: 1.0.4
+    dev: false
+
+  /qs@6.11.2:
+    resolution: {integrity: sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==}
     engines: {node: '>=0.6'}
     dependencies:
       side-channel: 1.0.4
