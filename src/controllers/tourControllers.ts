@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { prisma } from '@/db/index.js';
 import { TourQueryParamsSchema } from '@/types/schemas.js';
 import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
+import { exclude } from '@/utils/exclude.js';
 
 import {
   TourCreateInputSchema,
@@ -23,28 +24,27 @@ export function checkID(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+export function aliasTopTours(req: Request, _: Response, next: NextFunction) {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+
+  next();
+}
+
 export async function getAllTours(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    console.log(req.query);
-    const { page, limit, sort, fields, ...queryParams } =
-      TourQueryParamsSchema.parse(req.query);
-
-    const queryOptions = buildPrismaReqQueryOptions({
-      page,
-      limit,
-      sort,
-      fields,
-    });
+    const queryParams = TourQueryParamsSchema.parse(req.query);
+    const queryOptions = buildPrismaReqQueryOptions(queryParams);
+    // const tours = await prisma.tour.findMany(queryOptions);
 
     const tours = await prisma.tour.findMany({
-      where: {
-        ...queryParams,
-      },
       ...queryOptions,
+      select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
     });
 
     res.status(200).json({

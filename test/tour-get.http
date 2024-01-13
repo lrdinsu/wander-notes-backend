@@ -14,7 +14,12 @@ GET {{api}}/tours?price[lt]=1500&ratingsAverage[gte]=4.5
 GET {{api}}/tours?sort=-createdAt
 
 ### Get tour with pagination
-GET {{api}}/tours?page=2&limit=2
+GET {{api}}/tours?page=3&limit=5
 
 ### Get tour with fields
 GET {{api}}/tours?fields=name,price,duration,difficulty
+
+### aliasing
+GET {{api}}/tours/top-5-cheap
+
+Tour.find().find().sort()
