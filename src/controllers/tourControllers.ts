@@ -38,9 +38,29 @@ export async function getAllTours(
   next: NextFunction,
 ) {
   try {
+    const user = await prisma.user.findUnique({
+      where: { id: 2 },
+    });
+
+    if (!user) {
+      throw new Error('User not found!');
+    }
+
     const queryParams = TourQueryParamsSchema.parse(req.query);
     const queryOptions = buildPrismaReqQueryOptions(queryParams);
-    const tours = await prisma.tour.findMany(queryOptions);
+
+    let tours;
+    if (user.role === 'ADMIN' || user.role === 'PREMIUM_USER') {
+      tours = await prisma.tour.findMany(queryOptions);
+    } else {
+      tours = await prisma.tour.findMany({
+        ...queryOptions,
+        where: {
+          ...queryOptions.where,
+          isPremium: false,
+        },
+      });
+    }
 
     // const tours = await prisma.tour.findMany({
     //   ...queryOptions,

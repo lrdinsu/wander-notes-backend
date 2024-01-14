@@ -30,7 +30,7 @@ export function buildPrismaReqQueryOptions({
   const select = fields ? selectOptions : undefined;
 
   // Sets the 'take' value for limiting the number of records returned, if specified.
-  const take = limit ?? 5;
+  const take = limit ?? 10;
 
   // Calculates the 'skip' value for pagination, determining how many records to bypass.
   const skip = page && limit ? (page - 1) * limit : undefined;
