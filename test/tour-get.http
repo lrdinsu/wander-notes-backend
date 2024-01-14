@@ -22,4 +22,8 @@ GET {{api}}/tours?fields=name,price,duration,difficulty
 ### aliasing
 GET {{api}}/tours/top-5-cheap
 
-Tour.find().find().sort()
+### get tour stats
+GET {{api}}/tours/stats
+
+### get monthly plan
+GET {{api}}/tours/monthly-plan/2021

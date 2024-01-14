@@ -32,5 +32,4 @@ export const TourQueryParamsSchema = TourSchema.extend({
   .merge(QueryParamsBaseSchema)
   .omit({
     images: true,
-    startDates: true,
   });

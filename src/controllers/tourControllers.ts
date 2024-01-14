@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+import { sql } from 'kysely';
 
-import { prisma } from '@/db/index.js';
+import { db, prisma } from '@/db/index.js';
 import { TourQueryParamsSchema } from '@/types/schemas.js';
 import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
-import { exclude } from '@/utils/exclude.js';
 
 import {
   TourCreateInputSchema,
@@ -40,12 +40,12 @@ export async function getAllTours(
   try {
     const queryParams = TourQueryParamsSchema.parse(req.query);
     const queryOptions = buildPrismaReqQueryOptions(queryParams);
-    // const tours = await prisma.tour.findMany(queryOptions);
+    const tours = await prisma.tour.findMany(queryOptions);
 
-    const tours = await prisma.tour.findMany({
-      ...queryOptions,
-      select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
-    });
+    // const tours = await prisma.tour.findMany({
+    //   ...queryOptions,
+    //   select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
+    // });
 
     res.status(200).json({
       status: 'success',
@@ -65,16 +65,17 @@ export async function createTour(
   next: NextFunction,
 ) {
   try {
-    const tour = TourCreateInputSchema.parse(req.body);
-    const newTour = await prisma.tour.create({
-      data: tour,
+    const newTour = TourCreateInputSchema.parse(req.body);
+
+    const tour = await prisma.tour.create({
+      data: newTour,
     });
 
     res.status(201).json({
       status: 'success',
       message: 'New tour created!',
       data: {
-        tour: newTour,
+        tour,
       },
     });
   } catch (e) {
@@ -158,6 +159,113 @@ export async function deleteTour(
     res.status(204).json({
       status: 'success',
       data: null,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+// Aggregation pipeline & grouping
+export async function getTourStats(
+  _: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // const stats = await prisma.tour.aggregate({
+    //   where: {
+    //     ratingsAverage: { gte: 4.5 },
+    //   },
+    //   _avg: {
+    //     price: true,
+    //     ratingsAverage: true,
+    //   },
+    //   _min: {
+    //     price: true,
+    //   },
+    //   _max: {
+    //     price: true,
+    //   },
+    //   _sum: {
+    //     ratingsQuantity: true,
+    //   },
+    //   _count: {
+    //     name: true,
+    //   },
+    // });
+
+    const stats = await prisma.tour.groupBy({
+      by: ['difficulty'],
+      where: {
+        ratingsAverage: { gte: 4.5 },
+      },
+      _avg: {
+        price: true,
+        ratingsAverage: true,
+      },
+      _min: {
+        price: true,
+      },
+      _max: {
+        price: true,
+      },
+      _sum: {
+        ratingsQuantity: true,
+      },
+      _count: {
+        name: true,
+      },
+      having: {
+        difficulty: {
+          not: 'EASY',
+        },
+      },
+      orderBy: {
+        _avg: {
+          price: 'desc',
+        },
+      },
+    });
+
+    console.log(stats);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function getMonthlyPlan(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { year } = req.params;
+    const results = await db
+      .selectFrom('Tour')
+      .leftJoin('StartDate', 'Tour.id', 'StartDate.tourId')
+      .select([
+        sql`date_part('month', "startDate")`.as('month'),
+        (eb) => eb.fn.countAll<number>().as('numTourStarts'),
+        sql`array_agg("name")`.as('tours'),
+      ])
+      .where('startDate', '>=', new Date(`${year}-01-01`))
+      .where('startDate', '<=', new Date(`${year}-12-31`))
+      .groupBy('month')
+      .orderBy('month')
+      .execute();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        results,
+      },
     });
   } catch (e) {
     next(e);
