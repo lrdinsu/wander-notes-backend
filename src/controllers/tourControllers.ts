@@ -1,13 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+import { sql } from 'kysely';
 
-import { prisma } from '@/db/index.js';
-import { TourQueryParamsSchema } from '@/types/schemas.js';
+import { db, prisma } from '@/db/index.js';
+import { HttpError } from '@/types/errors.js';
 import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
 
 import {
   TourCreateInputSchema,
   TourUpdateInputSchema,
 } from '../../prisma/generated/zod/index.js';
+import { TourQueryParamsSchema } from '../validates/schemas.js';
 
 export function checkID(req: Request, res: Response, next: NextFunction) {
   const id = Number(req.params.id);
@@ -23,29 +25,48 @@ export function checkID(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+export function aliasTopTours(req: Request, _: Response, next: NextFunction) {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+
+  next();
+}
+
 export async function getAllTours(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    console.log(req.query);
-    const { page, limit, sort, fields, ...queryParams } =
-      TourQueryParamsSchema.parse(req.query);
-
-    const queryOptions = buildPrismaReqQueryOptions({
-      page,
-      limit,
-      sort,
-      fields,
+    const user = await prisma.user.findUnique({
+      where: { id: 2 },
     });
 
-    const tours = await prisma.tour.findMany({
-      where: {
-        ...queryParams,
-      },
-      ...queryOptions,
-    });
+    if (!user) {
+      throw new HttpError('User not found!', 404);
+    }
+
+    const queryParams = TourQueryParamsSchema.parse(req.query);
+    const queryOptions = buildPrismaReqQueryOptions(queryParams);
+
+    let tours;
+    if (user.role === 'ADMIN' || user.role === 'PREMIUM_USER') {
+      tours = await prisma.tour.findMany(queryOptions);
+    } else {
+      tours = await prisma.tour.findMany({
+        ...queryOptions,
+        where: {
+          ...queryOptions.where,
+          isPremium: false,
+        },
+      });
+    }
+
+    // const tours = await prisma.tour.findMany({
+    //   ...queryOptions,
+    //   select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
+    // });
 
     res.status(200).json({
       status: 'success',
@@ -65,16 +86,17 @@ export async function createTour(
   next: NextFunction,
 ) {
   try {
-    const tour = TourCreateInputSchema.parse(req.body);
-    const newTour = await prisma.tour.create({
-      data: tour,
+    const newTour = TourCreateInputSchema.parse(req.body);
+
+    const tour = await prisma.tour.create({
+      data: newTour,
     });
 
     res.status(201).json({
       status: 'success',
       message: 'New tour created!',
       data: {
-        tour: newTour,
+        tour,
       },
     });
   } catch (e) {
@@ -92,7 +114,7 @@ export async function getTour(req: Request, res: Response, next: NextFunction) {
     });
 
     if (!currentTour) {
-      throw new Error('Invalid ID');
+      throw new HttpError('Invalid Tour ID', 404);
     }
 
     res.status(200).json({
@@ -123,7 +145,7 @@ export async function updateTour(
     });
 
     if (!updatedTour) {
-      throw new Error('Invalid ID');
+      throw new HttpError('Invalid Tour ID', 404);
     }
 
     res.status(200).json({
@@ -158,6 +180,113 @@ export async function deleteTour(
     res.status(204).json({
       status: 'success',
       data: null,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+// Aggregation pipeline & grouping
+export async function getTourStats(
+  _: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // const stats = await prisma.tour.aggregate({
+    //   where: {
+    //     ratingsAverage: { gte: 4.5 },
+    //   },
+    //   _avg: {
+    //     price: true,
+    //     ratingsAverage: true,
+    //   },
+    //   _min: {
+    //     price: true,
+    //   },
+    //   _max: {
+    //     price: true,
+    //   },
+    //   _sum: {
+    //     ratingsQuantity: true,
+    //   },
+    //   _count: {
+    //     name: true,
+    //   },
+    // });
+
+    const stats = await prisma.tour.groupBy({
+      by: ['difficulty'],
+      where: {
+        ratingsAverage: { gte: 4.5 },
+      },
+      _avg: {
+        price: true,
+        ratingsAverage: true,
+      },
+      _min: {
+        price: true,
+      },
+      _max: {
+        price: true,
+      },
+      _sum: {
+        ratingsQuantity: true,
+      },
+      _count: {
+        name: true,
+      },
+      having: {
+        difficulty: {
+          not: 'EASY',
+        },
+      },
+      orderBy: {
+        _avg: {
+          price: 'desc',
+        },
+      },
+    });
+
+    console.log(stats);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function getMonthlyPlan(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { year } = req.params;
+    const results = await db
+      .selectFrom('Tour')
+      .leftJoin('StartDate', 'Tour.id', 'StartDate.tourId')
+      .select([
+        sql`date_part('month', "startDate")`.as('month'),
+        (eb) => eb.fn.countAll<number>().as('numTourStarts'),
+        sql`array_agg("name")`.as('tours'),
+      ])
+      .where('startDate', '>=', new Date(`${year}-01-01`))
+      .where('startDate', '<=', new Date(`${year}-12-31`))
+      .groupBy('month')
+      .orderBy('month')
+      .execute();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        results,
+      },
     });
   } catch (e) {
     next(e);
