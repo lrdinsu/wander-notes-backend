@@ -5,7 +5,7 @@ type buildPrismaReqQueryOptionsProps = {
   limit?: number; // Optionally specifies the limit on the number of items per page.
   sort?: string; // Optionally specifies the sorting criteria. Can include fields with a '-' prefix indicating descending order.
   fields?: string; // Optionally specifies a comma-separated list of fields to include in the query response.
-  [key: string]: unknown; // Allows inclusion of additional properties with unknown types.
+  [key: string]: unknown; // Allows inclusion of additional properties with unknown validates.
 };
 
 // Function to construct query options for use with Prisma ORM queries.

@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import { sql } from 'kysely';
 
 import { db, prisma } from '@/db/index.js';
-import { TourQueryParamsSchema } from '@/types/schemas.js';
+import { HttpError } from '@/types/errors.js';
 import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
 
 import {
   TourCreateInputSchema,
   TourUpdateInputSchema,
 } from '../../prisma/generated/zod/index.js';
+import { TourQueryParamsSchema } from '../validates/schemas.js';
 
 export function checkID(req: Request, res: Response, next: NextFunction) {
   const id = Number(req.params.id);
@@ -43,7 +44,7 @@ export async function getAllTours(
     });
 
     if (!user) {
-      throw new Error('User not found!');
+      throw new HttpError('User not found!', 404);
     }
 
     const queryParams = TourQueryParamsSchema.parse(req.query);
@@ -113,7 +114,7 @@ export async function getTour(req: Request, res: Response, next: NextFunction) {
     });
 
     if (!currentTour) {
-      throw new Error('Invalid ID');
+      throw new HttpError('Invalid Tour ID', 404);
     }
 
     res.status(200).json({
@@ -144,7 +145,7 @@ export async function updateTour(
     });
 
     if (!updatedTour) {
-      throw new Error('Invalid ID');
+      throw new HttpError('Invalid Tour ID', 404);
     }
 
     res.status(200).json({
