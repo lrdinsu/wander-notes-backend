@@ -3,7 +3,7 @@ import pg from 'pg';
 
 import { PrismaClient } from '@prisma/client';
 
-import { DB } from './types.js';
+import type { DB } from './types.js';
 
 const { Pool } = pg;
 

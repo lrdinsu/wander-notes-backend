@@ -43,4 +43,4 @@ Content-Type: application/json
 }
 
 ### Delete tour by id
-DELETE {{api}}/tours/5
+DELETE {{api}}/tours/100
