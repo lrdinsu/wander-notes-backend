@@ -1,25 +1,27 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { sql } from 'kysely';
 
+import {
+  AppMessage,
+  HttpStatusCode,
+  TourMessage,
+  UserMessage,
+} from '@/constants/constant.js';
 import { db, prisma } from '@/db/index.js';
-import { HttpError } from '@/types/errors.js';
+import { HttpError, NotFoundError } from '@/errors/errors.js';
 import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
+import { TourQueryParamsSchema } from '@/validates/schemas.js';
 
 import {
   TourCreateInputSchema,
   TourUpdateInputSchema,
-} from '../../prisma/generated/zod/index.js';
-import { TourQueryParamsSchema } from '../validates/schemas.js';
+} from '../../prisma/generated/zod';
 
-export function checkID(req: Request, res: Response, next: NextFunction) {
+export function checkID(req: Request, _: Response, next: NextFunction) {
   const id = Number(req.params.id);
 
   if (!Number.isInteger(id) || id <= 0) {
-    res.status(400).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-    return;
+    next(new HttpError(AppMessage.ID_FORMAT_ERROR, HttpStatusCode.BAD_REQUEST));
   }
 
   next();
@@ -44,7 +46,7 @@ export async function getAllTours(
     });
 
     if (!user) {
-      throw new HttpError('User not found!', 404);
+      throw new NotFoundError(UserMessage.NOT_FOUND);
     }
 
     const queryParams = TourQueryParamsSchema.parse(req.query);
@@ -68,7 +70,7 @@ export async function getAllTours(
     //   select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
     // });
 
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       status: 'success',
       results: tours.length,
       data: {
@@ -79,6 +81,27 @@ export async function getAllTours(
     next(e);
   }
 }
+
+// Use catchAsync helper function to catch errors
+// export const createTour: (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => void = catchAsync(async (req, res) => {
+//   const newTour = TourCreateInputSchema.parse(req.body);
+//
+//   const tour = await prisma.tour.create({
+//     data: newTour,
+//   });
+//
+//   res.status(201).json({
+//     status: 'success',
+//     message: 'New tour created!',
+//     data: {
+//       tour,
+//     },
+//   });
+// });
 
 export async function createTour(
   req: Request,
@@ -92,9 +115,9 @@ export async function createTour(
       data: newTour,
     });
 
-    res.status(201).json({
+    res.status(HttpStatusCode.CREATED).json({
       status: 'success',
-      message: 'New tour created!',
+      message: TourMessage.CREATED,
       data: {
         tour,
       },
@@ -114,10 +137,10 @@ export async function getTour(req: Request, res: Response, next: NextFunction) {
     });
 
     if (!currentTour) {
-      throw new HttpError('Invalid Tour ID', 404);
+      throw new NotFoundError(TourMessage.NOT_FOUND);
     }
 
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       status: 'success',
       data: {
         currentTour,
@@ -137,6 +160,7 @@ export async function updateTour(
     const { id } = req.params;
     const tour = TourUpdateInputSchema.parse(req.body);
 
+    // Error handled by prisma (PrismaClientKnownRequestError)
     const updatedTour = await prisma.tour.update({
       where: {
         id: Number(id),
@@ -144,12 +168,9 @@ export async function updateTour(
       data: tour,
     });
 
-    if (!updatedTour) {
-      throw new HttpError('Invalid Tour ID', 404);
-    }
-
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       status: 'success',
+      message: TourMessage.UPDATED,
       data: {
         updatedTour,
       },
@@ -167,18 +188,16 @@ export async function deleteTour(
   try {
     const { id } = req.params;
 
-    const deletedTour = await prisma.tour.delete({
+    // Error handled by prisma (PrismaClientKnownRequestError)
+    await prisma.tour.delete({
       where: {
         id: Number(id),
       },
     });
 
-    if (!deletedTour) {
-      throw new Error('Invalid ID');
-    }
-
-    res.status(204).json({
+    res.status(HttpStatusCode.NO_CONTENT).json({
       status: 'success',
+      message: TourMessage.DELETED,
       data: null,
     });
   } catch (e) {
@@ -248,9 +267,7 @@ export async function getTourStats(
       },
     });
 
-    console.log(stats);
-
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       status: 'success',
       data: {
         stats,
@@ -282,7 +299,7 @@ export async function getMonthlyPlan(
       .orderBy('month')
       .execute();
 
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       status: 'success',
       data: {
         results,

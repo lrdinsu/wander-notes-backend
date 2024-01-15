@@ -1,35 +1,33 @@
 {
   "compilerOptions": {
-    "lib": ["esnext"],
-    "module": "NodeNext",
-    "target": "ESNext",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "NodeNext",
-    "outDir": "dist",
-    "sourceMap": true,
-    /* Linting */
+    "target": "es2022",
+    "verbatimModuleSyntax": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+
     "strict": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictBindCallApply": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "declaration": true,
+    "noUncheckedIndexedAccess": true,
+
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true,
+
+    "lib": ["es2022"],
     /* Path */
     "baseUrl": "src/",
     "paths": {
-      "@/db/*": ["db/*"],
+      "@/constants/*": ["constants/*"],
       "@/controllers/*": ["controllers/*"],
+      "@/db/*": ["db/*"],
+      "@/errors/*": ["errors/*"],
+      "@/middlewares/*": ["middlewares/*"],
+      "@/routes/*": ["routes/*"],
       "@/types/*": ["types/*"],
       "@/utils/*": ["utils/*"],
-      "@/routes/*": ["routes/*"]
+      "@/validates/*": ["validates/*"]
     }
   },
   "include": ["src"],
