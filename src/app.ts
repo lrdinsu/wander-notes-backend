@@ -2,8 +2,9 @@ import express, { Express } from 'express';
 
 import { tourRouter } from '@/routes/tourRoutes.js';
 import { userRouter } from '@/routes/userRoutes.js';
-import { HttpError } from '@/types/errors.js';
 
+import { HTTP_RESPONSE_CODE } from './constants/constant.js';
+import { HttpError } from './errors/errors.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 
 export const app: Express = express();
@@ -20,7 +21,7 @@ app.use('/api/v1/users', userRouter);
 app.all('*', (req, _, next) => {
   const err = new HttpError(
     `Can't find "${req.originalUrl}" on this server!`,
-    404,
+    HTTP_RESPONSE_CODE.NOT_FOUND,
   );
 
   next(err);

@@ -25,11 +25,15 @@
     /* Path */
     "baseUrl": "src/",
     "paths": {
-      "@/db/*": ["db/*"],
+      "@/constants/*": ["constants/*"],
       "@/controllers/*": ["controllers/*"],
+      "@/db/*": ["db/*"],
+      "@/errors/*": ["errors/*"],
+      "@/middlewares/*": ["middlewares/*"],
+      "@/routes/*": ["routes/*"],
       "@/types/*": ["types/*"],
       "@/utils/*": ["utils/*"],
-      "@/routes/*": ["routes/*"]
+      "@/validates/*": ["validates/*"]
     }
   },
   "include": ["src"],

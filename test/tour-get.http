@@ -36,8 +36,8 @@ POST {{api}}/tours
 Content-Type: application/json
 
 {
-  "name": "The Forest Hiker",
-  "duration": 5,
+  "name": "The Forest Hiker 2",
+  "duration": "duration",
   "maxGroupSize": 25,
   "difficulty": "EASY",
   "ratingsAverage": 4.7,
