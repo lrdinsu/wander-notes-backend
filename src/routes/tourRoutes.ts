@@ -10,7 +10,7 @@ import {
   getTour,
   getTourStats,
   updateTour,
-} from '@/controllers/tourControllers.js';
+} from '@/controllers/tourController.js';
 
 export const tourRouter: Router = express.Router();
 

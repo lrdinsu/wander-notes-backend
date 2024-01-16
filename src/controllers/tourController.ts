@@ -5,17 +5,16 @@ import {
   AppMessage,
   HttpStatusCode,
   TourMessage,
-  UserMessage,
 } from '@/constants/constant.js';
 import { db, prisma } from '@/db/index.js';
-import { HttpError, NotFoundError } from '@/errors/errors.js';
-import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
-import { TourQueryParamsSchema } from '@/validates/schemas.js';
-
 import {
   TourCreateInputSchema,
   TourUpdateInputSchema,
-} from '../../prisma/generated/zod';
+} from '@/db/zod/index.js';
+import { HttpError, NotFoundError } from '@/errors/errors.js';
+import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
+import { exclude } from '@/utils/exclude.js';
+import { TourQueryParamsSchema } from '@/validates/schemas.js';
 
 export function checkID(req: Request, _: Response, next: NextFunction) {
   const id = Number(req.params.id);
@@ -41,34 +40,34 @@ export async function getAllTours(
   next: NextFunction,
 ) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: 2 },
-    });
-
-    if (!user) {
-      throw new NotFoundError(UserMessage.NOT_FOUND);
-    }
+    // const user = await prisma.user.findUnique({
+    //   where: { id: 2 },
+    // });
+    //
+    // if (!user) {
+    //   throw new NotFoundError(UserMessage.NOT_FOUND);
+    // }
 
     const queryParams = TourQueryParamsSchema.parse(req.query);
     const queryOptions = buildPrismaReqQueryOptions(queryParams);
 
-    let tours;
-    if (user.role === 'ADMIN' || user.role === 'PREMIUM_USER') {
-      tours = await prisma.tour.findMany(queryOptions);
-    } else {
-      tours = await prisma.tour.findMany({
-        ...queryOptions,
-        where: {
-          ...queryOptions.where,
-          isPremium: false,
-        },
-      });
-    }
+    // let tours;
+    // if (user.role === 'ADMIN' || user.role === 'PREMIUM_USER') {
+    //   tours = await prisma.tour.findMany(queryOptions);
+    // } else {
+    //   tours = await prisma.tour.findMany({
+    //     ...queryOptions,
+    //     where: {
+    //       ...queryOptions.where,
+    //       isPremium: false,
+    //     },
+    //   });
+    // }
 
-    // const tours = await prisma.tour.findMany({
-    //   ...queryOptions,
-    //   select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
-    // });
+    const tours = await prisma.tour.findMany({
+      ...queryOptions,
+      select: queryOptions.select ?? exclude('Tour', ['createdAt', 'summary']),
+    });
 
     res.status(HttpStatusCode.OK).json({
       status: 'success',
@@ -286,8 +285,8 @@ export async function getMonthlyPlan(
   try {
     const { year } = req.params;
     const results = await db
-      .selectFrom('Tour')
-      .leftJoin('StartDate', 'Tour.id', 'StartDate.tourId')
+      .selectFrom('tour')
+      .leftJoin('start_date', 'tour.id', 'start_date.tourId')
       .select([
         sql`date_part('month', "startDate")`.as('month'),
         (eb) => eb.fn.countAll<number>().as('numTourStarts'),

@@ -9,24 +9,19 @@ const { Pool } = pg;
 
 // Prisma
 export const prisma = new PrismaClient().$extends({
-  result: {
-    tour: {
-      durationWeeks: {
-        needs: { duration: true },
-        compute(tour) {
-          return tour.duration / 7;
-        },
-      },
-      slug: {
-        needs: { name: true },
-        compute(tour) {
-          return tour.name.toLowerCase().replace(/ /g, '-');
-        },
+  query: {
+    user: {
+      $allOperations({ args, query }) {
+        return query({
+          ...args,
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        });
       },
     },
-  },
-  query: {
-    tour: {},
   },
 });
 

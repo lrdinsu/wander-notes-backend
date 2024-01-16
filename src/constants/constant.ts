@@ -24,4 +24,9 @@ export const AppMessage = {
   DATABASE_ERROR: 'Database error',
 };
 export const TourMessage = generateHttpErrorMessage('Tour');
-export const UserMessage = generateHttpErrorMessage('User');
+export const UserMessage = {
+  ...generateHttpErrorMessage('User'),
+  EMAIL_ALREADY_EXISTS: 'Email already exists',
+  PASSWORD_INCORRECT: 'Incorrect password or email',
+  LOGIN_SUCCESS: 'Logged in successfully',
+} as const;
