@@ -27,6 +27,6 @@ export const TourMessage = generateHttpErrorMessage('Tour');
 export const UserMessage = {
   ...generateHttpErrorMessage('User'),
   EMAIL_ALREADY_EXISTS: 'Email already exists',
-  PASSWORD_INCORRECT: 'Incorrect password or email',
+  AUTHENTICATION_FAILED: 'Email or password is incorrect',
   LOGIN_SUCCESS: 'Logged in successfully',
 } as const;

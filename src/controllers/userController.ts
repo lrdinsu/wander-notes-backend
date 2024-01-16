@@ -31,6 +31,11 @@ export const createUser = async (
     const user = UserCreateInputSchema.parse(req.body);
     const newUser = await prisma.user.create({
       data: user,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
     });
 
     res.status(201).json({
