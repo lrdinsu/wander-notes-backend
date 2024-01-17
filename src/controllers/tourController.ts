@@ -172,6 +172,12 @@ export async function deleteTour(
 ) {
   try {
     const { id } = req.params;
+    // Delete related start dates first
+    // await prisma.startDate.deleteMany({
+    //   where: {
+    //     tourId: Number(id),
+    //   },
+    // });
 
     // Error handled by prisma (PrismaClientKnownRequestError)
     await prisma.tour.delete({

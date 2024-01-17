@@ -9,6 +9,10 @@ Content-Type: application/json
   "passwordChangedAt": "2024-08-10T14:57:00.000Z"
 }
 
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+
 ### Get user
 GET {{api}}/users
 
@@ -17,6 +21,18 @@ POST {{api}}/users/login
 Content-Type: application/json
 
 {
-  "email": "cedric_cappsi@reynolds.mb",
+  "email": "norvell_sturtevantfpp@carrying.sys",
   "password": "rZiCFh9oABw1xNJi"
 }
+
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+
+### Get all tours
+GET {{api}}/tours
+Authorization: Bearer {{auth_token}}
+
+### Delete tour
+DELETE {{api}}/tours/9
+Authorization: Bearer {{auth_token}}

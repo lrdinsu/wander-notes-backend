@@ -49,7 +49,7 @@ model StartDate {
   id        Int      @id @default(autoincrement())
   startDate DateTime
   tourId    Int
-  tour      Tour     @relation(fields: [tourId], references: [id])
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
   @@map("start_date")
 }

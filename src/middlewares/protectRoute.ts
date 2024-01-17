@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 
 import { UserMessage } from '@/constants/constant.js';
 import { prisma } from '@/db/index.js';
-import { UnauthorizedError } from '@/errors/errors.js';
+import { RoleType } from '@/db/zod/index.js';
+import { ForbiddenError, UnauthorizedError } from '@/errors/errors.js';
+import { exclude } from '@/utils/exclude.js';
 
 type JwtPayload = {
   id: number;
@@ -34,7 +36,7 @@ function hasPasswordChanged(
   return false;
 }
 
-export async function authMiddleware(
+export async function protectRoute(
   req: Request,
   _: Response,
   next: NextFunction,
@@ -50,7 +52,10 @@ export async function authMiddleware(
     const decoded = await jwtVerify(token, process.env.JWT_SECRET!);
 
     // 3) Check if user still exists
-    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: exclude('User', ['password']),
+    });
     if (!user) {
       throw new UnauthorizedError(
         'The user belonging to this token does no longer exist.',
@@ -71,3 +76,19 @@ export async function authMiddleware(
     next(err);
   }
 }
+
+export const restrictTo = (...roles: RoleType[]) => {
+  return (req: Request, _: Response, next: NextFunction) => {
+    try {
+      if (!roles.includes(req.user.role)) {
+        throw new ForbiddenError(
+          'You do not have permission to perform this action',
+        );
+      }
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+};

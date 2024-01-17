@@ -3,10 +3,14 @@ import type { NextFunction, Request, Response } from 'express';
 import { HttpStatusCode, UserMessage } from '@/constants/constant.js';
 import { prisma } from '@/db/index.js';
 import { UserCreateInputSchema } from '@/db/zod/index.js';
-import { BadRequestError, UnauthorizedError } from '@/errors/errors.js';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from '@/errors/errors.js';
 import { checkPassword } from '@/utils/checkPassword.js';
 import { generateToken } from '@/utils/generateToken.js';
-import { UserLoginSchema } from '@/validates/schemas.js';
+import { UserEmailSchema, UserLoginSchema } from '@/validates/schemas.js';
 import argon2 from '@node-rs/argon2';
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
@@ -74,4 +78,34 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   } catch (e) {
     next(e);
   }
+}
+
+export async function forgotPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // 1) Get user based on POSTed email
+    const { email } = UserEmailSchema.parse(req.body);
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new NotFoundError(UserMessage.EMAIL_NOT_FOUND_ERROR);
+    }
+
+    // 2) Generate the random reset token
+  } catch (e) {
+    next(e);
+  }
+}
+
+export function resetPassword(
+  _: Request,
+  res: Response,
+  __: NextFunction,
+): void {
+  res.status(HttpStatusCode.OK).json({
+    status: 'success',
+    message: 'This route is not yet defined!',
+  });
 }

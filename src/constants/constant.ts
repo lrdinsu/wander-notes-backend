@@ -4,6 +4,7 @@ export const enum HttpStatusCode {
   NO_CONTENT = 204,
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
   NOT_FOUND = 404,
   CONFLICT = 409,
   SERVER_ERROR = 500,
@@ -30,4 +31,5 @@ export const UserMessage = {
   AUTHENTICATION_ERROR: 'Email or password is incorrect',
   UNAUTHORIZED_ACCESS_ERROR:
     'You are not logged in! Please log in to get access.',
+  EMAIL_NOT_FOUND_ERROR: 'There is no user with email address.',
 } as const;
