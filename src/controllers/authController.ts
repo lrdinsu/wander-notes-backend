@@ -82,7 +82,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 export async function forgotPassword(
   req: Request,
-  res: Response,
+  _: Response,
   next: NextFunction,
 ) {
   try {
@@ -99,13 +99,4 @@ export async function forgotPassword(
   }
 }
 
-export function resetPassword(
-  _: Request,
-  res: Response,
-  __: NextFunction,
-): void {
-  res.status(HttpStatusCode.OK).json({
-    status: 'success',
-    message: 'This route is not yet defined!',
-  });
-}
+export function resetPassword() {}
