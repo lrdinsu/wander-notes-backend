@@ -1,30 +1,16 @@
 import type { NextFunction, Request, Response } from 'express';
 import { sql } from 'kysely';
 
-import {
-  AppMessage,
-  HttpStatusCode,
-  TourMessage,
-} from '@/constants/constant.js';
+import { HttpStatusCode, TourMessage } from '@/constants/constant.js';
 import { db, prisma } from '@/db/index.js';
 import {
   TourCreateInputSchema,
   TourUpdateInputSchema,
 } from '@/db/zod/index.js';
-import { HttpError, NotFoundError } from '@/errors/errors.js';
+import { NotFoundError } from '@/errors/errors.js';
 import { buildPrismaReqQueryOptions } from '@/utils/buildPrismaReqQueryOptions.js';
 import { exclude } from '@/utils/exclude.js';
 import { TourQueryParamsSchema } from '@/validates/schemas.js';
-
-export function checkID(req: Request, _: Response, next: NextFunction) {
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id) || id <= 0) {
-    next(new HttpError(AppMessage.ID_FORMAT_ERROR, HttpStatusCode.BAD_REQUEST));
-  }
-
-  next();
-}
 
 export function aliasTopTours(req: Request, _: Response, next: NextFunction) {
   req.query.limit = '5';

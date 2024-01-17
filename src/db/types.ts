@@ -54,7 +54,7 @@ export type User = {
     password: string;
     role: Generated<Role>;
     createdAt: Generated<Timestamp>;
-    updatedAt: Timestamp;
+    passwordChangedAt: Timestamp | null;
 };
 export type DB = {
     profile: Profile;

@@ -5,7 +5,8 @@ Content-Type: application/json
 {
   "name": "Delano",
   "email": "cedric_cappsi@reynolds.mb",
-  "password": "rZiCFh9oABw1xNJi"
+  "password": "rZiCFh9oABw1xNJi",
+  "passwordChangedAt": "2024-08-10T14:57:00.000Z"
 }
 
 ### Get user
@@ -16,6 +17,6 @@ POST {{api}}/users/login
 Content-Type: application/json
 
 {
-  "email": "cedric_cappsi@reynds.mb",
+  "email": "cedric_cappsi@reynolds.mb",
   "password": "rZiCFh9oABw1xNJi"
 }

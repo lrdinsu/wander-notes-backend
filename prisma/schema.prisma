@@ -55,14 +55,14 @@ model StartDate {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique /// @zod.string.email()
-  password  String /// @zod.string.min(8).max(20)
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  profile   Profile?
+  id                Int       @id @default(autoincrement())
+  name              String
+  email             String    @unique /// @zod.string.email()
+  password          String /// @zod.string.min(8).max(20)
+  role              Role      @default(USER)
+  createdAt         DateTime  @default(now())
+  passwordChangedAt DateTime?
+  profile           Profile?
 
   @@map("user")
 }

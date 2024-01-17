@@ -1,5 +1,6 @@
 ### Get all tours
 GET {{api}}/tours
+Authorization: Bearer {{token}}
 
 ### Get tour by id
 GET {{api}}/tours/100
