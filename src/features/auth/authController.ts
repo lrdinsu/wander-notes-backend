@@ -9,9 +9,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@/errors/errors.js';
-import { checkPassword } from '@/utils/checkPassword.js';
 import { sendPasswordResetEmail } from '@/utils/email.js';
-import { generateToken } from '@/utils/generateToken.js';
 import {
   UserEmailSchema,
   UserLoginSchema,
@@ -19,6 +17,9 @@ import {
   UserResetPasswordSchema,
 } from '@/validates/schemas.js';
 import argon2 from '@node-rs/argon2';
+
+import { checkPassword } from './utils/checkPassword.js';
+import { generateToken } from './utils/generateToken.js';
 
 function createSendToken(
   user: UserPartial,

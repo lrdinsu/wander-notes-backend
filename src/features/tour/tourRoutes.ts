@@ -1,5 +1,8 @@
 import express, { Router } from 'express';
 
+import { checkID } from '@/middlewares/checkID.js';
+
+import { protectRoute, restrictTo } from '../auth/authMiddleware.js';
 import {
   aliasTopTours,
   createTour,
@@ -9,9 +12,7 @@ import {
   getTour,
   getTourStats,
   updateTour,
-} from '@/controllers/tourController.js';
-import { protectRoute, restrictTo } from '@/middlewares/authMiddleware.js';
-import { checkID } from '@/middlewares/checkID.js';
+} from './tourController.js';
 
 export const tourRouter: Router = express.Router();
 

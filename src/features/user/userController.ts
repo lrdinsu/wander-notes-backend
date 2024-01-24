@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { HttpStatusCode } from '@/constants/constant.js';
+import { HttpStatusCode, UserMessage } from '@/constants/constant.js';
 import { prisma } from '@/db/index.js';
-import { UserCreateInputSchema } from '@/db/zod/index.js';
+import { UserCreateInputSchema, UserPartialSchema } from '@/db/zod/index.js';
 
 export const getAllUsers = async (_: Request, res: Response) => {
   const users = await prisma.user.findMany({
@@ -56,6 +56,29 @@ export const getUser = (_: Request, res: Response) => {
     message: 'This route is not yet defined!',
   });
 };
+
+export async function updateMe(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { id } = req.user!;
+    const updatedData = UserPartialSchema.parse(req.body);
+
+    await prisma.user.update({
+      where: { id },
+      data: updatedData,
+    });
+
+    res.status(HttpStatusCode.OK).json({
+      status: 'success',
+      message: UserMessage.UPDATED,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
 
 export const updateUser = (_: Request, res: Response) => {
   res.status(500).json({

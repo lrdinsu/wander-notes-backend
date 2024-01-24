@@ -25,15 +25,7 @@
     "outDir": "dist",
     "baseUrl": "src/",
     "paths": {
-      "@/constants/*": ["constants/*"],
-      "@/controllers/*": ["controllers/*"],
-      "@/db/*": ["db/*"],
-      "@/errors/*": ["errors/*"],
-      "@/middlewares/*": ["middlewares/*"],
-      "@/routes/*": ["routes/*"],
-      "@/types/*": ["types/*"],
-      "@/utils/*": ["utils/*"],
-      "@/validates/*": ["validates/*"],
+      "@/*": ["*"]
     },
   },
   "include": ["src"],

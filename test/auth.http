@@ -66,3 +66,13 @@ Content-Type: application/json
 > {%
   client.global.set("auth_token", response.body.token);
 %}
+
+### Updated me
+PATCH {{api}}/users/updateMe
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "email": "new@email.com",
+  "name": "new name"
+}
