@@ -52,3 +52,10 @@ export const UserLoginSchema = UserSchema.pick({
 });
 
 export const UserEmailSchema = UserSchema.pick({ email: true });
+
+export const UserPasswordSchema = UserSchema.pick({ password: true });
+
+export const UserResetPasswordSchema = z.object({
+  currentPassword: z.string().min(8).max(20),
+  newPassword: z.string().min(8).max(20),
+});

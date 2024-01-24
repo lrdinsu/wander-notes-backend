@@ -30,7 +30,9 @@ function hasPasswordChanged(
 ) {
   if (passwordChangedAt) {
     const changedTimestamp = passwordChangedAt.getTime();
-    return jwtTimestamp * 1000 < changedTimestamp;
+    // jwtTimestamp is in seconds, changedTimestamp is in milliseconds
+    // jwtTimestamp is rounded down to the nearest second, changedTimestamp is not
+    return (jwtTimestamp + 1) * 1000 < changedTimestamp;
   }
 
   return false;
@@ -80,7 +82,7 @@ export async function protectRoute(
 export const restrictTo = (...roles: RoleType[]) => {
   return (req: Request, _: Response, next: NextFunction) => {
     try {
-      if (!roles.includes(req.user.role)) {
+      if (!roles.includes(req.user!.role)) {
         throw new ForbiddenError(
           'You do not have permission to perform this action',
         );

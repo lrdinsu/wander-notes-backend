@@ -33,9 +33,9 @@
       "@/routes/*": ["routes/*"],
       "@/types/*": ["types/*"],
       "@/utils/*": ["utils/*"],
-      "@/validates/*": ["validates/*"]
-    }
+      "@/validates/*": ["validates/*"],
+    },
   },
   "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules"],
 }

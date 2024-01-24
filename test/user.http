@@ -14,3 +14,4 @@ Content-Type: application/json
   "password": "123456",
   "role": "PREMIUM_USER"
 }
+

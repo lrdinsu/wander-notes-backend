@@ -38,3 +38,9 @@ export class ForbiddenError extends HttpError {
     super(message, HttpStatusCode.FORBIDDEN);
   }
 }
+
+export class ServerError extends HttpError {
+  constructor(message: string) {
+    super(message, HttpStatusCode.SERVER_ERROR);
+  }
+}

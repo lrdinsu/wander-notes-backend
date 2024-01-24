@@ -55,6 +55,8 @@ export type User = {
     role: Generated<Role>;
     createdAt: Generated<Timestamp>;
     passwordChangedAt: Timestamp | null;
+    resetPasswordToken: string | null;
+    resetPasswordExp: Timestamp | null;
 };
 export type DB = {
     profile: Profile;
