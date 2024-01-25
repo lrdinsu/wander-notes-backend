@@ -1,6 +1,7 @@
 import { Kysely, PostgresDialect } from 'kysely';
 import pg from 'pg';
 
+import { softDelete } from '@/db/extensions/softDelete.js';
 import { PrismaClient } from '@prisma/client';
 
 import type { DB } from './types.js';
@@ -8,27 +9,7 @@ import type { DB } from './types.js';
 const { Pool } = pg;
 
 // Prisma
-export const prisma = new PrismaClient().$extends({
-  result: {
-    tour: {
-      durationWeeks: {
-        needs: { duration: true },
-        compute(tour) {
-          return tour.duration / 7;
-        },
-      },
-      slug: {
-        needs: { name: true },
-        compute(tour) {
-          return tour.name.toLowerCase().replace(/ /g, '-');
-        },
-      },
-    },
-  },
-  query: {
-    tour: {},
-  },
-});
+export const prisma = new PrismaClient().$extends(softDelete);
 
 // Kysely
 const dialect = new PostgresDialect({

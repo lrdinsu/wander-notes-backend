@@ -6,18 +6,18 @@ generator client {
 }
 
 generator zod {
-  provider                  = "zod-prisma-validates"
+  provider                  = "zod-prisma-types"
+  output                    = "../src/db/zod"
   createRelationValuesTypes = true
+  createPartialTypes        = true
 }
 
 generator kysely {
   provider = "prisma-kysely"
 
-  // Optionally provide a destination directory for the generated file
-  // and a filename of your choice
-  output       = "../src/db"
-  fileName     = "validates.ts"
-  // Optionally generate runtime enums to a separate file
+  output   = "../src/db"
+  fileName = "types.ts"
+
   enumFileName = "enums.ts"
 }
 
@@ -43,22 +43,47 @@ model Tour {
   createdAt       DateTime    @default(now())
   startDates      StartDate[]
   isPremium       Boolean     @default(false)
+
+  @@map("tour")
 }
 
 model StartDate {
   id        Int      @id @default(autoincrement())
   startDate DateTime
   tourId    Int
-  tour      Tour     @relation(fields: [tourId], references: [id])
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("start_date")
 }
 
 model User {
+  id                 Int       @id @default(autoincrement())
+  name               String
+  email              String    @unique /// @zod.string.email()
+  password           String /// @zod.string.min(8).max(20)
+  role               Role      @default(USER)
+  createdAt          DateTime  @default(now())
+  passwordChangedAt  DateTime?
+  profile            Profile?
+  resetPasswordToken String?
+  resetPasswordExp   DateTime?
+  deleted            Boolean   @default(false)
+
+  @@map("user")
+}
+
+model Profile {
   id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
+  firstName String?
+  lastName  String?
+  bio       String?
+  photo     String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profile")
 }
 
 enum Difficulty {

@@ -1,0 +1,69 @@
+### Create new user
+POST {{api}}/users/signup
+Content-Type: application/json
+
+{
+  "name": "Delano",
+  "email": "cedric_cappsi@reynolds.mb",
+  "password": "rZiCFh9oABw1xNJi",
+  "passwordChangedAt": "2024-08-10T14:57:00.000Z"
+}
+
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+
+### Get user
+GET {{api}}/users
+
+### Login
+POST {{api}}/users/login
+Content-Type: application/json
+
+{
+  "email": "new@email.com",
+  "password": "123456789"
+}
+
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+
+### Get all tours
+GET {{api}}/tours
+Authorization: Bearer {{auth_token}}
+
+### Delete tour
+DELETE {{api}}/tours/9
+Authorization: Bearer {{auth_token}}
+
+### Forgot password
+POST {{api}}/users/forgot-password
+Content-Type: application/json
+
+{
+  "email": "danise_holifieldgj@story.yy"
+}
+
+### Reset password
+PATCH {{api}}/users/reset-password/0ab1686c167263b2ad3f10fb4e0c0fee2758548a21690de8dd8d24aaa06b27a1
+Content-Type: application/json
+
+{
+  "password": "1234567890"
+}
+
+### Update password
+PATCH {{api}}/users/update-password
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "123456789",
+  "newPassword": "123456789"
+}
+
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+

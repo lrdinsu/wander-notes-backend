@@ -1,7 +1,7 @@
 import type { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 
-import { AppMessage, HttpStatusCode } from '@/constants/constant.js';
+import { ApplicationMessage, HttpStatusCode } from '@/constants/constant.js';
 import { HttpError } from '@/errors/errors.js';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 
@@ -32,6 +32,13 @@ function processError(err: unknown): ProcessErrorReturn {
     };
     // Other errors
   } else if (err instanceof Error) {
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return {
+        statusCode: HttpStatusCode.UNAUTHORIZED,
+        status: 'fail',
+        message: `🎆JWT Error: ${err.message}`,
+      };
+    }
     return {
       statusCode: HttpStatusCode.SERVER_ERROR,
       status: 'error',
@@ -42,7 +49,7 @@ function processError(err: unknown): ProcessErrorReturn {
   return {
     statusCode: HttpStatusCode.SERVER_ERROR,
     status: 'error',
-    message: AppMessage.SERVER_ERROR,
+    message: ApplicationMessage.SERVER_ERROR,
   };
 }
 
@@ -63,14 +70,16 @@ function processZodError(err: ZodError) {
 }
 
 function processPrismaError(err: PrismaClientKnownRequestError) {
+  const message = err.message.split('\n').at(-1);
+
   // Unique constraint error
   if (err.code === 'P2002') {
-    const field = (err.meta?.target as string[]).join(', ');
+    // const field = (err.meta?.target as string[]).join(', ');
 
     return {
       statusCode: HttpStatusCode.CONFLICT,
       status: 'fail',
-      message: `⚠️Prisma Error: ['${field}'] already exists`,
+      message: `⚠️Prisma Error: ${message}`,
     };
   }
 
@@ -79,14 +88,14 @@ function processPrismaError(err: PrismaClientKnownRequestError) {
     return {
       statusCode: HttpStatusCode.NOT_FOUND,
       status: 'fail',
-      message: `⚠️Prisma Error: ${err.meta?.cause as string}`,
+      message: `⚠️Prisma Error: ${message}`,
     };
   }
 
   return {
     statusCode: HttpStatusCode.BAD_REQUEST,
     status: 'fail',
-    message: `⚠️ ${AppMessage.DATABASE_ERROR} : ${err.code}`,
+    message: `⚠️ ${ApplicationMessage.DATABASE_ERROR} : ${err.code}`,
   };
 }
 

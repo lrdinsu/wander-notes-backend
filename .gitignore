@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 *.local.md
-.dev.env
+.env
 .env.json
 *.env
 
