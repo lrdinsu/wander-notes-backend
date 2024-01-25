@@ -1,6 +1,19 @@
+### Login
+POST {{api}}/users/login
+Content-Type: application/json
+
+{
+  "email": "new@email.com",
+  "password": "123456789"
+}
+
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+
 ### Get all tours
 GET {{api}}/tours
-Authorization: Bearer {{token}}
+Authorization: Bearer {{auth_token}}
 
 ### Get tour by id
 GET {{api}}/tours/100

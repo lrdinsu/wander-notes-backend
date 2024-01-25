@@ -9,7 +9,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@/errors/errors.js';
-import { generateToken } from '@/features/auth/utils/generateToken.js';
+import { generateTokenAndSetCookie } from '@/features/auth/utils/generateTokenAndSetCookie.js';
 import { generateUserInResponse } from '@/features/user/utils/generateUserInResponse.js';
 import { sendPasswordResetEmail } from '@/utils/email.js';
 import {
@@ -46,7 +46,7 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
     });
 
     // Generate token
-    const token = generateToken(newUser.id);
+    const token = generateTokenAndSetCookie(newUser.id, res);
 
     res.status(HttpStatusCode.CREATED).json({
       status: 'success',
@@ -73,7 +73,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     }
 
     // Generate token
-    const token = generateToken(user.id);
+    const token = generateTokenAndSetCookie(user.id, res);
 
     res.status(HttpStatusCode.OK).json({
       status: 'success',
@@ -180,7 +180,7 @@ export async function resetPassword(
     });
 
     // Log the user in, send JWT
-    const token = generateToken(user.id);
+    const token = generateTokenAndSetCookie(user.id, res);
 
     res.status(HttpStatusCode.OK).json({
       status: 'success',
@@ -228,7 +228,7 @@ export async function updatePassword(
     });
 
     // Log the user in, send JWT
-    const token = generateToken(currentUser.id);
+    const token = generateTokenAndSetCookie(currentUser.id, res);
 
     res.status(HttpStatusCode.OK).json({
       status: 'success',

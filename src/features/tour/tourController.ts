@@ -33,6 +33,7 @@ export async function getAllTours(
     // if (!user) {
     //   throw new NotFoundError(UserMessage.NOT_FOUND);
     // }
+    console.log(req.query);
 
     const queryParams = TourQueryParamsSchema.parse(req.query);
     const queryOptions = buildPrismaReqQueryOptions(queryParams);
