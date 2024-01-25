@@ -16,7 +16,7 @@ export const TourScalarFieldEnumSchema = z.enum(['id','name','duration','maxGrou
 
 export const StartDateScalarFieldEnumSchema = z.enum(['id','startDate','tourId']);
 
-export const UserScalarFieldEnumSchema = z.enum(['id','name','email','password','role','createdAt','passwordChangedAt','resetPasswordToken','resetPasswordExp']);
+export const UserScalarFieldEnumSchema = z.enum(['id','name','email','password','role','createdAt','passwordChangedAt','resetPasswordToken','resetPasswordExp','deleted']);
 
 export const ProfileScalarFieldEnumSchema = z.enum(['id','firstName','lastName','bio','photo','userId','createdAt','updatedAt']);
 
@@ -168,6 +168,7 @@ export const UserSchema = z.object({
   passwordChangedAt: z.coerce.date().nullable(),
   resetPasswordToken: z.string().nullable(),
   resetPasswordExp: z.coerce.date().nullable(),
+  deleted: z.boolean(),
 })
 
 export type User = z.infer<typeof UserSchema>
@@ -355,6 +356,7 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   passwordChangedAt: z.boolean().optional(),
   resetPasswordToken: z.boolean().optional(),
   resetPasswordExp: z.boolean().optional(),
+  deleted: z.boolean().optional(),
   profile: z.union([z.boolean(),z.lazy(() => ProfileArgsSchema)]).optional(),
 }).strict()
 
@@ -569,6 +571,7 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   passwordChangedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   resetPasswordToken: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   resetPasswordExp: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  deleted: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   profile: z.union([ z.lazy(() => ProfileNullableRelationFilterSchema),z.lazy(() => ProfileWhereInputSchema) ]).optional().nullable(),
 }).strict();
 
@@ -582,6 +585,7 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   passwordChangedAt: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   resetPasswordToken: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   resetPasswordExp: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  deleted: z.lazy(() => SortOrderSchema).optional(),
   profile: z.lazy(() => ProfileOrderByWithRelationInputSchema).optional()
 }).strict();
 
@@ -610,6 +614,7 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   passwordChangedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   resetPasswordToken: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   resetPasswordExp: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  deleted: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   profile: z.union([ z.lazy(() => ProfileNullableRelationFilterSchema),z.lazy(() => ProfileWhereInputSchema) ]).optional().nullable(),
 }).strict());
 
@@ -623,6 +628,7 @@ export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderBy
   passwordChangedAt: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   resetPasswordToken: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   resetPasswordExp: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  deleted: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => UserCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => UserAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => UserMaxOrderByAggregateInputSchema).optional(),
@@ -643,6 +649,7 @@ export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.UserScal
   passwordChangedAt: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
   resetPasswordToken: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   resetPasswordExp: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
+  deleted: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
 }).strict();
 
 export const ProfileWhereInputSchema: z.ZodType<Prisma.ProfileWhereInput> = z.object({
@@ -903,6 +910,7 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   passwordChangedAt: z.coerce.date().optional().nullable(),
   resetPasswordToken: z.string().optional().nullable(),
   resetPasswordExp: z.coerce.date().optional().nullable(),
+  deleted: z.boolean().optional(),
   profile: z.lazy(() => ProfileCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
@@ -916,6 +924,7 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   passwordChangedAt: z.coerce.date().optional().nullable(),
   resetPasswordToken: z.string().optional().nullable(),
   resetPasswordExp: z.coerce.date().optional().nullable(),
+  deleted: z.boolean().optional(),
   profile: z.lazy(() => ProfileUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
@@ -928,6 +937,7 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   passwordChangedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordToken: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordExp: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   profile: z.lazy(() => ProfileUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
@@ -941,6 +951,7 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   passwordChangedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordToken: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordExp: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   profile: z.lazy(() => ProfileUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
@@ -953,7 +964,8 @@ export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = 
   createdAt: z.coerce.date().optional(),
   passwordChangedAt: z.coerce.date().optional().nullable(),
   resetPasswordToken: z.string().optional().nullable(),
-  resetPasswordExp: z.coerce.date().optional().nullable()
+  resetPasswordExp: z.coerce.date().optional().nullable(),
+  deleted: z.boolean().optional()
 }).strict();
 
 export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyMutationInput> = z.object({
@@ -965,6 +977,7 @@ export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyM
   passwordChangedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordToken: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordExp: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyInput> = z.object({
@@ -977,6 +990,7 @@ export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedU
   passwordChangedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordToken: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordExp: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ProfileCreateInputSchema: z.ZodType<Prisma.ProfileCreateInput> = z.object({
@@ -1414,7 +1428,8 @@ export const UserCountOrderByAggregateInputSchema: z.ZodType<Prisma.UserCountOrd
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   passwordChangedAt: z.lazy(() => SortOrderSchema).optional(),
   resetPasswordToken: z.lazy(() => SortOrderSchema).optional(),
-  resetPasswordExp: z.lazy(() => SortOrderSchema).optional()
+  resetPasswordExp: z.lazy(() => SortOrderSchema).optional(),
+  deleted: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserAvgOrderByAggregateInputSchema: z.ZodType<Prisma.UserAvgOrderByAggregateInput> = z.object({
@@ -1430,7 +1445,8 @@ export const UserMaxOrderByAggregateInputSchema: z.ZodType<Prisma.UserMaxOrderBy
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   passwordChangedAt: z.lazy(() => SortOrderSchema).optional(),
   resetPasswordToken: z.lazy(() => SortOrderSchema).optional(),
-  resetPasswordExp: z.lazy(() => SortOrderSchema).optional()
+  resetPasswordExp: z.lazy(() => SortOrderSchema).optional(),
+  deleted: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserMinOrderByAggregateInputSchema: z.ZodType<Prisma.UserMinOrderByAggregateInput> = z.object({
@@ -1442,7 +1458,8 @@ export const UserMinOrderByAggregateInputSchema: z.ZodType<Prisma.UserMinOrderBy
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   passwordChangedAt: z.lazy(() => SortOrderSchema).optional(),
   resetPasswordToken: z.lazy(() => SortOrderSchema).optional(),
-  resetPasswordExp: z.lazy(() => SortOrderSchema).optional()
+  resetPasswordExp: z.lazy(() => SortOrderSchema).optional(),
+  deleted: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserSumOrderByAggregateInputSchema: z.ZodType<Prisma.UserSumOrderByAggregateInput> = z.object({
@@ -2127,7 +2144,8 @@ export const UserCreateWithoutProfileInputSchema: z.ZodType<Prisma.UserCreateWit
   createdAt: z.coerce.date().optional(),
   passwordChangedAt: z.coerce.date().optional().nullable(),
   resetPasswordToken: z.string().optional().nullable(),
-  resetPasswordExp: z.coerce.date().optional().nullable()
+  resetPasswordExp: z.coerce.date().optional().nullable(),
+  deleted: z.boolean().optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutProfileInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutProfileInput> = z.object({
@@ -2139,7 +2157,8 @@ export const UserUncheckedCreateWithoutProfileInputSchema: z.ZodType<Prisma.User
   createdAt: z.coerce.date().optional(),
   passwordChangedAt: z.coerce.date().optional().nullable(),
   resetPasswordToken: z.string().optional().nullable(),
-  resetPasswordExp: z.coerce.date().optional().nullable()
+  resetPasswordExp: z.coerce.date().optional().nullable(),
+  deleted: z.boolean().optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutProfileInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutProfileInput> = z.object({
@@ -2167,6 +2186,7 @@ export const UserUpdateWithoutProfileInputSchema: z.ZodType<Prisma.UserUpdateWit
   passwordChangedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordToken: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordExp: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateWithoutProfileInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutProfileInput> = z.object({
@@ -2179,6 +2199,7 @@ export const UserUncheckedUpdateWithoutProfileInputSchema: z.ZodType<Prisma.User
   passwordChangedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordToken: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resetPasswordExp: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StartDateCreateManyTourInputSchema: z.ZodType<Prisma.StartDateCreateManyTourInput> = z.object({

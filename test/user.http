@@ -2,7 +2,7 @@
 GET {{api}}/users
 
 ### Get user
-GET {{api}}/users/2
+GET {{api}}/users/5
 
 ### Create user
 POST {{api}}/users
@@ -14,4 +14,32 @@ Content-Type: application/json
   "password": "123456",
   "role": "PREMIUM_USER"
 }
+
+### Login
+POST {{api}}/users/login
+Content-Type: application/json
+
+{
+  "email": "new@email.com",
+  "password": "123456789"
+}
+
+> {%
+  client.global.set("auth_token", response.body.token);
+%}
+
+### Updated me
+PATCH {{api}}/users/update-me
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "email": "new@email.com",
+  "name": "new name2",
+  "role": "ADMIN"
+}
+
+### Delete me
+DELETE {{api}}/users/delete-me
+Authorization: Bearer {{auth_token}}
 

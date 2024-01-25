@@ -57,6 +57,7 @@ export type User = {
     passwordChangedAt: Timestamp | null;
     resetPasswordToken: string | null;
     resetPasswordExp: Timestamp | null;
+    deleted: Generated<boolean>;
 };
 export type DB = {
     profile: Profile;

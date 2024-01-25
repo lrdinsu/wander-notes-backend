@@ -10,6 +10,7 @@ import {
 import { protectRoute } from '../auth/authMiddleware.js';
 import {
   createUser,
+  deleteMe,
   deleteUser,
   getAllUsers,
   getUser,
@@ -21,10 +22,11 @@ export const userRouter: Router = express.Router();
 
 userRouter.post('/signup', signup);
 userRouter.post('/login', login);
-userRouter.post('/forgotPassword', forgotPassword);
-userRouter.patch('/resetPassword/:token', resetPassword);
-userRouter.patch('/updatePassword', protectRoute, updatePassword);
-userRouter.patch('/updateMe', protectRoute, updateMe);
+userRouter.post('/forgot-password', forgotPassword);
+userRouter.patch('/reset-password/:token', resetPassword);
+userRouter.patch('/update-password', protectRoute, updatePassword);
+userRouter.patch('/update-me', protectRoute, updateMe);
+userRouter.delete('/delete-me', protectRoute, deleteMe);
 
 userRouter.route('/').get(getAllUsers).post(createUser);
 userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);

@@ -21,7 +21,7 @@ POST {{api}}/users/login
 Content-Type: application/json
 
 {
-  "email": "norvell_sturtevantfpp@carrying.sys",
+  "email": "new@email.com",
   "password": "123456789"
 }
 
@@ -38,7 +38,7 @@ DELETE {{api}}/tours/9
 Authorization: Bearer {{auth_token}}
 
 ### Forgot password
-POST {{api}}/users/forgotPassword
+POST {{api}}/users/forgot-password
 Content-Type: application/json
 
 {
@@ -46,7 +46,7 @@ Content-Type: application/json
 }
 
 ### Reset password
-PATCH {{api}}/users/resetPassword/0ab1686c167263b2ad3f10fb4e0c0fee2758548a21690de8dd8d24aaa06b27a1
+PATCH {{api}}/users/reset-password/0ab1686c167263b2ad3f10fb4e0c0fee2758548a21690de8dd8d24aaa06b27a1
 Content-Type: application/json
 
 {
@@ -54,7 +54,7 @@ Content-Type: application/json
 }
 
 ### Update password
-PATCH {{api}}/users/updatePassword
+PATCH {{api}}/users/update-password
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -67,12 +67,3 @@ Content-Type: application/json
   client.global.set("auth_token", response.body.token);
 %}
 
-### Updated me
-PATCH {{api}}/users/updateMe
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-{
-  "email": "new@email.com",
-  "name": "new name"
-}

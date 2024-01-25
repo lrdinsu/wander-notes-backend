@@ -5,7 +5,6 @@ import { UserMessage } from '@/constants/constant.js';
 import { prisma } from '@/db/index.js';
 import { RoleType } from '@/db/zod/index.js';
 import { ForbiddenError, UnauthorizedError } from '@/errors/errors.js';
-import { exclude } from '@/utils/exclude.js';
 
 type JwtPayload = {
   id: number;
@@ -56,7 +55,6 @@ export async function protectRoute(
     // 3) Check if user still exists
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: exclude('User', ['password']),
     });
     if (!user) {
       throw new UnauthorizedError(
